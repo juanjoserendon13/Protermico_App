@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackGrey"
+    tools:context=".FeedActivity">
+
+    <Button
+        android:id="@+id/logout_btn"
+        android:layout_width="108dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/rounded_btn"
+        android:backgroundTint="@color/colorRedPalette"
+        android:text="@string/btn_logout"
+        android:textColor="#fff"
+        android:textSize="22sp"
+        tools:layout_editor_absoluteX="276dp"
+        tools:layout_editor_absoluteY="1dp" />
+
+    <TextView
+        android:id="@+id/state_fixed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/logout_btn"
+        android:layout_marginStart="15dp"
+        android:text="@string/state_title"
+        android:textColor="@color/colorNormalText"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/state_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/state_fixed"
+        android:layout_below="@+id/logout_btn"
+        android:text="TextView"
+        android:textAllCaps="true"
+        android:textColor="@color/colorYellowPalette"
+        android:textSize="25sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="363dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/state_change"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="300dp"
+            android:layout_height="90dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            app:cardElevation="2dp">
+
+            <TextView
+                android:id="@+id/temp_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:text="@string/temperature_title"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textColor="@color/colorNormalText"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/temp_change"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_gravity="bottom|center"
+                android:layout_marginBottom="4dp"
+                android:text="29"
+                android:textAlignment="center"
+                android:textColor="@color/colorYellowPalette"
+                android:textSize="50sp" />
+
+
+        </android.support.v7.widget.CardView>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="300dp"
+            android:layout_height="120dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/card_back" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="300dp"
+            android:layout_height="130dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:id="@+id/arrow_units_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="25dp"
+                app:srcCompat="@drawable/arrow_negative" />
+
+            <TextView
+                android:id="@+id/units_total"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Total: 99999"
+                android:textAlignment="center"
+                android:textColor="@color/colorLightText"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/units_title_tv"
+                android:layout_width="119dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/units_title"
+                android:textAlignment="center"
+                android:textColor="@color/colorHighlightText"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/recollected_title_tv"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="40dp"
+                android:text="@string/units_recollected"
+                android:textAlignment="center"
+                android:textColor="@color/colorNormalText"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/expected_title_tv"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="40dp"
+                android:text="@string/units_expected"
+                android:textAlignment="center"
+                android:textColor="@color/colorNormalText"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/recollected_real_tv"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="55dp"
+                android:text="100"
+                android:textAlignment="center"
+                android:textColor="@color/colorBluePalette"
+                android:textSize="35sp" />
+
+            <TextView
+                android:id="@+id/real_time1_tv"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="95dp"
+                android:text="9:00am"
+                android:textAlignment="center"
+                android:textColor="@color/colorBluePalette"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/expected_real_tv"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="55dp"
+                android:text="100"
+                android:textAlignment="center"
+                android:textColor="@color/colorGreenPalette"
+                android:textSize="35sp" />
+
+            <TextView
+                android:id="@+id/real_time2_tv"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="95dp"
+                android:text="9:00am"
+                android:textAlignment="center"
+                android:textColor="@color/colorGreenPalette"
+                android:textSize="20sp" />
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/remainder_water"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="215dp"
+        android:text="@string/remainder_water"
+        android:textAlignment="center"
+        android:textColor="@color/colorBackWhite"
+        android:textSize="30sp" />
+
+
+    <ToggleButton
+        android:id="@+id/home_btn"
+        android:layout_width="106dp"
+        android:layout_height="53dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/togglebtn_custom"
+        android:textAlignment="center"
+        android:textOff=""
+        android:textOn="" />
+
+    <ToggleButton
+        android:id="@+id/statistics_btn"
+        android:layout_width="106dp"
+        android:layout_height="53dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/togglebtn_custom_statistics"
+        android:text="ToggleButton"
+        android:textOff=""
+        android:textOn="" />
+
+    <ToggleButton
+        android:id="@+id/config_btn"
+        android:layout_width="106dp"
+        android:layout_height="53dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/togglebtn_custom_config"
+        android:text="ToggleButton"
+        android:textOff=""
+        android:textOn="" />
+
+
+</RelativeLayout>

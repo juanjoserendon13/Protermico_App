@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackWhite"
+    tools:context=".KeyBoardActivity">
+
+    <Button
+        android:id="@+id/logout_btn"
+        android:layout_width="108dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/rounded_btn"
+        android:backgroundTint="@color/colorRedPalette"
+        android:text="@string/btn_logout"
+        android:textColor="#fff"
+        android:textSize="22sp"
+        tools:layout_editor_absoluteX="276dp"
+        tools:layout_editor_absoluteY="1dp" />
+
+    <TextView
+        android:id="@+id/instruction_tv"
+        android:layout_width="266dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="120dp"
+        android:text="@string/instruction_keyboard"
+        android:textAlignment="center"
+        android:textColor="@color/colorYellowPalette"
+        android:textSize="30sp" />
+
+    <EditText
+        android:id="@+id/units_input"
+        android:layout_width="310dp"
+        android:layout_height="70dp"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:ems="10"
+        android:hint="@string/hint_keyboard"
+        android:inputType="number"
+        android:textColor="@color/colorGreenPalette"
+        android:textSize="30sp"
+        android:theme="@style/inputUnits" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/inputlayout_til"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="230dp"
+        android:baselineAligned="false"
+        app:counterEnabled="false"
+        app:errorEnabled="false">
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/confirm_btn"
+        android:layout_width="202dp"
+        android:layout_height="65dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/rounded_btn"
+        android:backgroundTint="@color/colorGreenPalette"
+        android:fontFamily="sans-serif"
+        android:text="@string/confirm_btn"
+        android:textAllCaps="false"
+        android:textColor="#fff"
+        android:textSize="30sp" />;
+    />
+
+</RelativeLayout>

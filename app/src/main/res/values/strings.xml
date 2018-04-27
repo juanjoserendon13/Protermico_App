@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Protermico</string>
+    <string name="btn_login">Ingresar</string>
+    <string name="remainder_login">** Por favor verifique que se encuentra emparejado con el dispositivo protérmico desde el bluetooth.</string>
+    <string name="title_activity_loading">LoadingActivity</string>
+    <string name="feedback_loading">Verificando conexión...</string>
+    <string name="btn_logout">Salir</string>
+    <string name="instruction_keyboard">Ingresar cantidad de unidades para recolectar:</string>
+    <string name="hint_keyboard">Digite las unidades</string>
+    <string name="confirm_btn">Confirmar</string>
+    <string name="state_title">Estado:</string>
+    <string name="temperature_title">Temperatura</string>
+    <string name="remainder_water">Recuerde hidratarse cada 20 minutos.</string>
+    <string name="remainder_rest">Por favor descanse en la zona designada durante:</string>
+    <string name="units_title">Unidades:</string>
+    <string name="units_recollected">Recolectadas</string>
+    <string name="units_expected">Esperadas</string>
+    <string name="btn_save">Guardar</string>
+</resources>
