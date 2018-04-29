@@ -24,6 +24,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            if (extras.getBoolean("WARNING")) {
+                msg(extras.getString("ALERT"));
+            }
+        }
+
 
         remainderTv = findViewById(R.id.remainder_tv);
         fontRemainder = Typeface.createFromAsset(getAssets(), "fonts/HelveticaLTStd-LightObl.otf");
@@ -40,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (protermicoBt == null) {
                     //Show a mensag. that thedevice has no bluetooth adapter
-                    Toast.makeText(getApplicationContext(), "Bluetooth Device Not Available", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "El bluetooth no está disponible", Toast.LENGTH_LONG).show();
                     //finish apk
                     finish();
                 } else {
@@ -56,5 +64,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    // fast way to call Toast
+    private void msg(final String s) {
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
     }
 }

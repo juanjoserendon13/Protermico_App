@@ -1,7 +1,5 @@
 package com.proter.juanjose.protermico;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Handler;
@@ -12,16 +10,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.UUID;
 
 
 public class LoadingActivity extends AppCompatActivity implements Observer {
     TextView feedbackTv;
     Typeface fontTvFeedback;
     ProgressBar loadingProgress;
+
 
     private String addressO = null;
 
@@ -31,13 +28,12 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
     final int handlerState = 0;
     private StringBuilder recDataString = new StringBuilder();
 
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
 
-        conBt = ConnectionBt.getInstance();
-        conBt.addObserver(this);
-        conBt.setAppContext(getApplicationContext());
+
         addressO = "20:16:12:05:88:65";
 
         feedbackTv = findViewById(R.id.feedback_tv);
@@ -55,10 +51,13 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
                     if (endOfLineIndex > 0) {                                           // make sure there data before ~
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);    // extract string
                         int dataLength = dataInPrint.length();       //get length of data received
+                        Log.i("handler mensaje-----", readMessage);
 
                         if (recDataString.charAt(0) == '#')        //if it starts with # we know it is what we are looking for
                         {
+//                            msg("listo para ingresar");
                             Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
+                            intent.putExtra("CONNECT", true);
                             startActivity(intent);
 
                         }
@@ -69,6 +68,11 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
                 }
             }
         };
+        conBt = ConnectionBt.getInstance();
+        conBt.addObserver(this);
+//        conBt.getBtSocket();
+
+//        conBt.setAppContext(getApplicationContext());
 
     }
 
@@ -99,10 +103,20 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-
         String readMessage = ((ConnectionBt) o).getData();
-        bluetoothIn.obtainMessage(handlerState, readMessage).sendToTarget();
-        Log.i("Notifico esto", readMessage);
+        int bytes = ((ConnectionBt) o).getByte();
+        if (readMessage != null) {
+            bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+            Log.i("Notifico esto", readMessage);
+        }
+
+        if (!((ConnectionBt) o).getIsBtConnected()) {
+
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.putExtra("WARNING", true);
+            intent.putExtra("ALERT", "No se pudo conectar al dispositivo");
+            startActivity(intent);
+        }
 
     }
 }

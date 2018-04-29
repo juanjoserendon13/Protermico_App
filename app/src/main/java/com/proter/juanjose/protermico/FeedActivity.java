@@ -60,10 +60,6 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        conBt = ConnectionBt.getInstance();
-        conBt.addObserver(this);
-        conBt.write("c");
-
         celsius = "°C";
         temp = "32";
         logoutBtn = findViewById(R.id.logout_btn);
@@ -124,10 +120,10 @@ public class FeedActivity extends AppCompatActivity implements Observer {
             String expect = savedInstanceState.getString("saved_ex");
             expectedRealTv.setText(expect);
 
-            Log.d("In savedInstance", recollect);
-            Log.d("In savedInstance", expect);
+            Log.i("In savedInstance------", recollect);
+            Log.i("In savedInstance------", expect);
         } else {
-            Log.d("not in oncreate saved", "ggg");
+            Log.i("not in oncreate saved", "ggg");
         }
         // remainderWaterTv.setText("Recuerde hidratarse cada 20 minutos.");
 
@@ -193,6 +189,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         };
 
         handler.postDelayed(ru, 3000);
+        //Hanlder que conecta los datos entrantes y los despliega en interfaz
 
         bluetoothIn = new Handler() {
             public void handleMessage(android.os.Message msg) {
@@ -212,11 +209,19 @@ public class FeedActivity extends AppCompatActivity implements Observer {
                         recDataString.delete(0, recDataString.length());      //clear all string data
                         // strIncom =" ";
                         dataInPrint = " ";
+                        readMessage = " ";
                     }
                 }
             }
         };
 
+        conBt = ConnectionBt.getInstance();
+        conBt.addObserver(this);
+        if (extras != null) {
+            if (extras.getBoolean("CONNECT")) {
+                conBt.write("c");
+            }
+        }
 
     }
 
@@ -231,16 +236,16 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         //outSate.putString(RECOLL, recollectedRealTv.getText().toString());
         //outSate.putString(EXPECT, expectedRealTv.getText().toString());
 
-        Log.d("In onSaveRe", toSaveRe);
-        Log.d("In onSaveEx", toSaveEx);
+        Log.i("In onSaveRe", toSaveRe);
+        Log.i("In onSaveEx", toSaveEx);
 
     }
 
     //persistencia de datos NO FUNKA con boton de interfaz
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-
-        Log.d("In onRestore", "bien");
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d("In onRestore----------", "bien");
         String savedRe = savedInstanceState.getString("saved_re");
         String savedEx = savedInstanceState.getString("saved_ex");
 
@@ -251,11 +256,20 @@ public class FeedActivity extends AppCompatActivity implements Observer {
 
         //recollected.setText(savedInstanceState.getString(RECOLL));
         //expected.setText(savedInstanceState.getString(EXPECT));
-        super.onRestoreInstanceState(savedInstanceState);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
     }
 
     protected void onResume() {
         ConnectionBt.getInstance().addObserver(this);
+        homeBtn.setChecked(true);
+        statisticBtn.setChecked(false);
+        configBtn.setChecked(false);
         super.onResume();
     }
 
