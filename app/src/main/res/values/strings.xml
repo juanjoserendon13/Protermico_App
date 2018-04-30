@@ -16,4 +16,7 @@
     <string name="units_recollected">Recolectadas</string>
     <string name="units_expected">Esperadas</string>
     <string name="btn_save">Guardar</string>
+    <string name="recollection_state_1">Atrasado</string>
+    <string name="recollection_state_2">A tiempo</string>
+    <string name="popup_alert">Es tiempo de descansar.</string>
 </resources>

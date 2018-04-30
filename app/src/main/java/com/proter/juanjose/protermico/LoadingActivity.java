@@ -111,7 +111,6 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
         }
 
         if (!((ConnectionBt) o).getIsBtConnected()) {
-
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.putExtra("WARNING", true);
             intent.putExtra("ALERT", "No se pudo conectar al dispositivo");

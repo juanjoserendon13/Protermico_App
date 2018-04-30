@@ -40,8 +40,20 @@
             android:name=".FeedActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-        <activity android:name=".ConfigActivity" />
-        <activity android:name=".StatisticActivity" />
+        <activity
+            android:name=".ConfigActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".StatisticActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PopUp"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.CustomPop"
+            />
     </application>
 
 </manifest>

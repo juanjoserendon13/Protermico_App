@@ -14,11 +14,11 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="height" value="57" />
-                            <entry key="outputName" value="ic_leaves" />
+                            <entry key="height" value="30" />
+                            <entry key="outputName" value="ic_bt_close_popup" />
                             <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="D:\Universidad ICESI\IX\PDG_2\Assets\Android\Leaves.svg" />
-                            <entry key="width" value="59" />
+                            <entry key="sourceFile" value="D:\Universidad ICESI\IX\PDG_2\Assets\Android\bt_close_popup.svg" />
+                            <entry key="width" value="30" />
                           </map>
                         </option>
                       </PersistentState>

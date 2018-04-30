@@ -1,37 +1,41 @@
 package com.proter.juanjose.protermico;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.os.PersistableBundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
 public class FeedActivity extends AppCompatActivity implements Observer {
 
-    Button logoutBtn;
-    ToggleButton homeBtn, statisticBtn, configBtn;
-    TextView stateFixedTv, stateChangeTv, tempFixedTv, tempChangeTv, remainderWaterTv, unitsTitleTv, unitsTotalTv, recollectedTitleTv, expectedTitleTv;
-    TextView recollectedRealTv, expectedRealTv, realTimeTv, realTimeDosTv;
-    Typeface fontHelRoman, fontHelLight, fontHelBold;
-
-    ImageView arrowUnitIv;
+    private Button logoutBtn;
+    private ToggleButton homeBtn, statisticBtn, configBtn;
+    private TextView stateFixedTv, stateChangeTv, tempFixedTv, tempChangeTv, remainderWaterTv, unitsTitleTv, unitsTotalTv, recollectedTitleTv, expectedTitleTv;
+    private TextView recollectedRealTv, expectedRealTv, realTimeTv, realTimeDosTv, stateHarvestTv, counterRestTv, unitRestTv;
+    private Typeface fontHelRoman, fontHelLight, fontHelBold;
+    private LinearLayout layoutTimer;
+    private CardView cardRemainderCv;
+    private Context cont;
+    private ImageView arrowUnitIv, clockIv;
 
     private String celsius;
     private float colorMap;
@@ -47,11 +51,16 @@ public class FeedActivity extends AppCompatActivity implements Observer {
     private Handler handler = new Handler();
 
     //Manejo de mensajes con interfaz grafica y bluetooth
-    ConnectionBt conBt;
+    private ConnectionBt conBt;
     static Handler bluetoothIn;
     final int handlerState = 0;
     private StringBuilder recDataString = new StringBuilder();
 
+    //Variables para el contador regresivo
+    private long START_TIME_IN_MILLIS = 0;
+    private CountDownTimer countDown;
+    private boolean timerRunning;
+    private long timeLeftInMillis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +68,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         setContentView(R.layout.activity_feed);
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
+        cont = getApplicationContext();
 
         celsius = "°C";
         temp = "32";
@@ -78,6 +88,12 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         realTimeTv = findViewById(R.id.real_time1_tv);
         realTimeDosTv = findViewById(R.id.real_time2_tv);
         arrowUnitIv = findViewById(R.id.arrow_units_iv);
+        stateHarvestTv = findViewById(R.id.state_harvest);
+        layoutTimer = findViewById(R.id.layout_timer_rest);
+        clockIv = findViewById(R.id.clock_iv);
+        counterRestTv = findViewById(R.id.counter_rest_tv);
+        unitRestTv = findViewById(R.id.unit_rest_tv);
+        cardRemainderCv = findViewById(R.id.card_remainder_rest);
 
         homeBtn = findViewById(R.id.home_btn);
         homeBtn.setChecked(true);
@@ -104,6 +120,9 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         expectedRealTv.setTypeface(fontHelBold);
         realTimeTv.setTypeface(fontHelLight);
         realTimeDosTv.setTypeface(fontHelLight);
+        stateHarvestTv.setTypeface(fontHelBold);
+        counterRestTv.setTypeface(fontHelBold);
+        unitRestTv.setTypeface(fontHelBold);
 
         //recollectedRealTv.setText(String.valueOf(re));
         //expectedRealTv.setText(String.valueOf(ex));
@@ -133,7 +152,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
             unitsTotalTv.setText("Total: " + unitsChanged);
         }
         compareUnits(Integer.parseInt(recollectedRealTv.getText().toString()), Integer.parseInt(expectedRealTv.getText().toString()));
-        systemState(1);
+
         systemTemp(temp);
         //metodos click listener para los botones de la pantalla feed
         //Sale de la aplicación y regresa a la pantalla de inicio.
@@ -195,7 +214,8 @@ public class FeedActivity extends AppCompatActivity implements Observer {
             public void handleMessage(android.os.Message msg) {
                 if (msg.what == handlerState) {          //if message is what we want
                     String readMessage = (String) msg.obj;                                                                // msg.arg1 = bytes from connect thread
-                    recDataString.append(readMessage);              //keep appending to string until ~
+                    recDataString.append(readMessage);
+                    Log.i("----------", "llega al handler " + recDataString);//keep appending to string until ~
                     int endOfLineIndex = recDataString.indexOf("~");                    // determine the end-of-line
                     if (endOfLineIndex > 0) {                                           // make sure there data before ~
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);    // extract string
@@ -203,8 +223,23 @@ public class FeedActivity extends AppCompatActivity implements Observer {
 
                         if (recDataString.charAt(0) == '#')        //if it starts with # we know it is what we are looking for
                         {
-                            msg("Patron singleton, hilos y bluetooth OK");
+//                            msg("Patron singleton, hilos y bluetooth OK");
 
+                        }
+                        //Condicionales que controlan el tiempo de descanso proveniente del dispositivo.
+                        if (recDataString.charAt(0) == '*') {
+                            msg("Patron singleton, hilos y bluetooth OK");
+                            String type = recDataString.substring(1, 5);
+                            String millis = recDataString.substring(6, endOfLineIndex);
+
+                            if (type.equals("rest")) {
+                                Log.i("----------", "Millis para descansar " + millis);
+                                startActivity(new Intent(FeedActivity.this, PopUp.class));
+                                systemState(0);
+                                START_TIME_IN_MILLIS = Long.parseLong(millis, 10);
+                                timeLeftInMillis = START_TIME_IN_MILLIS;
+                                startTimer();
+                            }
                         }
                         recDataString.delete(0, recDataString.length());      //clear all string data
                         // strIncom =" ";
@@ -219,9 +254,10 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         conBt.addObserver(this);
         if (extras != null) {
             if (extras.getBoolean("CONNECT")) {
-                conBt.write("c");
+                conBt.write("w");
             }
         }
+        updateCountDownText();
 
     }
 
@@ -270,6 +306,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         homeBtn.setChecked(true);
         statisticBtn.setChecked(false);
         configBtn.setChecked(false);
+
         super.onResume();
     }
 
@@ -279,16 +316,74 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         super.onPause();
     }
 
+    private void updateCountDownText() {
+        int minutes = (int) (timeLeftInMillis / 1000) / 60;
+        int seconds = (int) (timeLeftInMillis / 1000) % 60;
+
+        String timeLeftFormat = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        counterRestTv.setText(timeLeftFormat);
+    }
+
+    private void startTimer() {
+        countDown = new CountDownTimer(timeLeftInMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeftInMillis = millisUntilFinished;
+                updateCountDownText();
+
+            }
+
+            @Override
+            public void onFinish() {
+                Log.i("--------------", "termina la cuenta regresiva");
+                systemState(1);
+                resetTimer();
+                timerRunning = false;
+            }
+        }.start();
+
+        timerRunning = true;
+    }
+
+    private void resetTimer() {
+        timeLeftInMillis = START_TIME_IN_MILLIS;
+        updateCountDownText();
+    }
+
 
     //Gestor de estado del sistema con su configuración visual
     private void systemState(int state) {
         if (state == 1) {
             stateChangeTv.setText("Trabajando");
             stateChangeTv.setTextColor(getResources().getColor(R.color.colorYellowPalette));
+            layoutTimer.setBackgroundResource(R.drawable.card_back);
+            remainderWaterTv.setText(R.string.remainder_water);
+            remainderWaterTv.setTextSize(30);
+            clockIv.setVisibility(View.INVISIBLE);
+            counterRestTv.setVisibility(View.INVISIBLE);
+            unitRestTv.setVisibility(View.INVISIBLE);
+            cardRemainderCv.setMaxCardElevation(getPixelsFromDPs(0));
+            cardRemainderCv.setCardElevation(getPixelsFromDPs(0));
+
         } else if (state == 0) {
             stateChangeTv.setText("Descansando");
             stateChangeTv.setTextColor(getResources().getColor(R.color.colorGreenPalette));
+            layoutTimer.setBackgroundResource(R.drawable.card_back_rest);
+            remainderWaterTv.setText(R.string.remainder_rest);
+            remainderWaterTv.setTextSize(20);
+            clockIv.setVisibility(View.VISIBLE);
+            counterRestTv.setVisibility(View.VISIBLE);
+            unitRestTv.setVisibility(View.VISIBLE);
+            cardRemainderCv.setMaxCardElevation(getPixelsFromDPs(15));
+            cardRemainderCv.setCardElevation(getPixelsFromDPs(10));
         }
+    }
+
+    protected int getPixelsFromDPs(int dps) {
+        Resources r = cont.getResources();
+        int px = (int) (TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, dps, r.getDisplayMetrics()));
+        return px;
     }
 
     //Gestor de temperatura del sistema con su configuración visual.
@@ -319,9 +414,13 @@ public class FeedActivity extends AppCompatActivity implements Observer {
                 recollectedRealTv.setText(String.valueOf(real));
                 expectedRealTv.setText(String.valueOf(expected));
                 if (real < expected) {
-                    arrowUnitIv.setImageResource(R.drawable.arrow_negative);
+                    arrowUnitIv.setImageResource(R.drawable.ic_negative);
+                    stateHarvestTv.setText(R.string.recollection_state_1);
+                    stateHarvestTv.setTextColor(getResources().getColor(R.color.colorRedPalette));
                 } else if (real >= expected) {
-                    arrowUnitIv.setImageResource(R.drawable.arrow_positive);
+                    arrowUnitIv.setImageResource(R.drawable.ic_positive);
+                    stateHarvestTv.setText(R.string.recollection_state_2);
+                    stateHarvestTv.setTextColor(getResources().getColor(R.color.colorGreenPalette));
                 }
             }
         });
@@ -336,8 +435,10 @@ public class FeedActivity extends AppCompatActivity implements Observer {
     public void update(Observable o, Object arg) {
 
         String readMessage = ((ConnectionBt) o).getData();
-        bluetoothIn.obtainMessage(handlerState, readMessage).sendToTarget();
-        Log.i("Notifico esto", readMessage);
-
+        int bytes = ((ConnectionBt) o).getByte();
+        if (readMessage != null) {
+            bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+            Log.i("Notifico esto", readMessage);
+        }
     }
 }

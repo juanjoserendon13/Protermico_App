@@ -21,4 +21,10 @@
         <item name="colorControlActivated">@color/colorGreenPalette</item>
     </style>
 
+    <style name="AppTheme.CustomPop">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/colorOpacity</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
 </resources>

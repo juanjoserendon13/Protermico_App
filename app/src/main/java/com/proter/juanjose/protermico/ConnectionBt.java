@@ -73,9 +73,10 @@ public class ConnectionBt extends Observable implements Runnable {
                     bytes = mmInStream.read(buffer);         //read bytes from input buffer
                     String readMessage = new String(buffer, 0, bytes);
                     data = readMessage;
-                    Log.i("------------------", "dato entrante: " + data);
+
 
                     if (data != bufferData) {
+                        Log.i("------------------", "dato entrante: " + data);
                         setChanged();
                         notifyObservers();
                         clearChanged();
