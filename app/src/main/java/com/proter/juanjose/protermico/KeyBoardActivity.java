@@ -2,7 +2,6 @@ package com.proter.juanjose.protermico;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,18 +9,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import java.util.Observable;
+import java.util.Observer;
 
-public class KeyBoardActivity extends AppCompatActivity {
+public class KeyBoardActivity extends AppCompatActivity implements Observer {
 
-    TextView instructionTv;
-    Typeface fontInstruction;
+    private TextView instructionTv;
+    private Typeface fontInstruction;
 
-    Button logoutBtn;
-    Button confirmBtn;
-    EditText inputUnitEt;
+    private Button logoutBtn;
+    private Button confirmBtn;
+    private EditText inputUnitEt;
+
+    private ConnectionBt conBt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class KeyBoardActivity extends AppCompatActivity {
                     //Log.i("Units Print", inputUnitEt.getText().toString());
                     String unidades = inputUnitEt.getText().toString();
                     Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
+                    intent.putExtra("CONNECT", true);
                     intent.putExtra("DATO", unidades);
                     startActivity(intent);
                 } else {
@@ -55,12 +57,36 @@ public class KeyBoardActivity extends AppCompatActivity {
         //Sale de la aplicación y regresa a la pantalla de inicio.
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                conBt.closeConnection();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("WARNING", true);
+                intent.putExtra("ALERT", "Se desconectó del dispositivo");
                 startActivity(intent);
 
             }
         });
+        conBt = ConnectionBt.getInstance();
+        conBt.addObserver(this);
+    }
 
+    protected void onResume() {
+        super.onResume();
+        ConnectionBt.getInstance().addObserver(this);
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ConnectionBt.getInstance().deleteObserver(this);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        String readMessage = ((ConnectionBt) o).getData();
+        int bytes = ((ConnectionBt) o).getByte();
+        if (readMessage != null) {
+//            bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+            Log.i("--Notifico en el update", readMessage);
+        }
     }
 }

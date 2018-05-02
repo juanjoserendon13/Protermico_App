@@ -64,16 +64,20 @@
         android:layout_marginStart="15dp"
         android:layout_marginTop="95dp"
         android:text="Unidades:"
-        android:textSize="18sp" />
+        android:textSize="20sp" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/input_units_et"
         android:layout_width="186dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/textView2"
         android:layout_alignEnd="@+id/logout_btn"
         android:ems="10"
-        android:inputType="number" />
+        android:hint="Unidas para recolectar"
+        android:inputType="number"
+        android:textColor="@color/colorGreenPalette"
+        android:theme="@style/inputUnits" />
+
 
     <TextView
         android:id="@+id/textView3"
@@ -83,16 +87,20 @@
         android:layout_alignStart="@+id/textView2"
         android:layout_marginTop="138dp"
         android:text="Horas de Trabajo: "
-        android:textSize="18sp" />
+        android:textSize="20sp" />
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/input_hours_et"
         android:layout_width="185dp"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/logout_btn"
         android:layout_alignTop="@+id/textView3"
         android:ems="10"
-        android:inputType="number" />
+        android:hint="Horas diarias"
+        android:inputType="number"
+        android:textColor="@color/colorGreenPalette"
+        android:theme="@style/inputUnits" />
+
 
     <Button
         android:id="@+id/save_btn"

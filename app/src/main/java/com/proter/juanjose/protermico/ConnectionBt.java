@@ -18,6 +18,7 @@ public class ConnectionBt extends Observable implements Runnable {
 
     private static ConnectionBt miClase;
     private Boolean isConnect = true;
+    private boolean isBtConnected = false;
     private int bytes;
 
     private String address = "20:16:12:05:88:65";
@@ -25,16 +26,13 @@ public class ConnectionBt extends Observable implements Runnable {
     private String bufferData;
     static Thread hilo;
 
-
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
 
-    private InputStream mmInStream;
-    private OutputStream mmOutStream;
+    private InputStream mmInStream = null;
+    private OutputStream mmOutStream = null;
 
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
-    private boolean isBtConnected = false;
 
     private ConnectionBt() {
 
@@ -43,12 +41,12 @@ public class ConnectionBt extends Observable implements Runnable {
         new MyTask().execute();
         hilo = new Thread(this);
         hilo.start();
-        Log.i("Connection", " comienza el hilo del Bluetooth");
+        Log.i("-------------", " comienza el hilo del Bluetooth");
 
     }
 
     public static synchronized ConnectionBt getInstance() {
-        Log.i("Connection", " Crea la instancia del singleton");
+        Log.i("-------------", " Crea la instancia del singleton ");
         if (miClase == null) {
             miClase = new ConnectionBt();
         }
@@ -58,38 +56,28 @@ public class ConnectionBt extends Observable implements Runnable {
     @Override
     public void run() {
         byte[] buffer = new byte[256];
-
         while (true) {
             //Se realiza un condicional que decide si es necesario volver a llamar el asynctask en caso de que
             // se reintente la conexión.
-            if (isConnect == false) {
-                Log.i("------------------", "llamado secundario al asynctask");
-                new MyTask().execute();
-                isConnect = true;
-            }
-            try {
-                if (mmInStream != null) {
+//            Log.i("------", "en el while");
+            if (mmInStream != null && btSocket != null) {
+                try {
                     hilo.sleep(50);
                     bytes = mmInStream.read(buffer);         //read bytes from input buffer
                     String readMessage = new String(buffer, 0, bytes);
                     data = readMessage;
-
-
                     if (data != bufferData) {
-                        Log.i("------------------", "dato entrante: " + data);
+                        Log.i("-------------", "dato entrante en singleton: " + data);
                         setChanged();
                         notifyObservers();
                         clearChanged();
                         bufferData = readMessage;
                     }
-
-                    // Send the obtained bytes to the UI Activity via handler
-//            bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+                } catch (Exception e) {
+                    Log.i("-----------", "el error?????? " + e);
+//                    break;
                 }
-            } catch (Exception e) {
-                break;
             }
-
         }
     }
 
@@ -102,7 +90,7 @@ public class ConnectionBt extends Observable implements Runnable {
                 tmpIn = btSocket.getInputStream();
                 tmpOut = btSocket.getOutputStream();
                 isConnect = true;
-                Log.i("------------------", "crea los flujos");
+                Log.i("-------------", "crea los flujos");
 
             } catch (IOException e) {
             }
@@ -118,9 +106,9 @@ public class ConnectionBt extends Observable implements Runnable {
         if (btSocket != null) {
             try {
                 mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
-                Log.i("Connection", " Realiza la escritura");
+                Log.i("-------------", " Realiza la escritura");
             } catch (IOException e) {
-                Log.i("Connection", " No pudo escribir y notifica");
+                Log.i("-------------", " No pudo escribir y notifica");
 
             }
         }
@@ -136,13 +124,29 @@ public class ConnectionBt extends Observable implements Runnable {
         //creates secure outgoing connecetion with BT device using UUID
     }
 
+    public void closeConnection() {
+        try {
+            write("stop");
+            isBtConnected = false;
+            isConnect = false;
+            btSocket.close();
+            btSocket = null;
+            btAdapter = null;
+            mmInStream = null;
+//            miClase = null;
+            Log.i("----------", "vars" + " " + isBtConnected + " " + isConnect + " " + btSocket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Boolean getBtSocket() {
         if (btSocket == null || isBtConnected == false) {
-            Log.i("------------------", "llamado al asynctask");
+            Log.i("-------------", "llamado al asynctask");
             new MyTask().execute();
             return false;
         } else {
-            Log.i("------------------", "no es necesario llamar al asynctask");
+            Log.i("-------------", "no es necesario llamar al asynctask");
             return true;
         }
 
@@ -173,21 +177,20 @@ public class ConnectionBt extends Observable implements Runnable {
 
                 try {
                     btSocket = createBluetoothSocket(device);
-                    Log.i("------------------", "crea el socket");
+                    Log.i("-------------", "crea el socket");
                 } catch (IOException e) {
                 }
                 // Se establece la conexion socket por bluetooth.
                 try {
                     btSocket.connect();
                     isBtConnected = true;
-                    isConnect = true;
-                    Log.i("------------------", "se conecta");
+                    Log.i("-------------", "se conecta");
 
                 } catch (IOException e) {
                     try {
                         isBtConnected = false;
                         isConnect = false;
-                        Log.i("------------------", "no se puede conectar");
+                        Log.i("-------------", "no se puede conectar");
                         btSocket.close();
                         btSocket = null;
                         setChanged();
@@ -206,11 +209,11 @@ public class ConnectionBt extends Observable implements Runnable {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             if (isBtConnected) {
-                Log.i("------------------", "valida y crea los flujos");
+                Log.i("-------------", "valida y crea los flujos");
                 //Se crean los flujos de conexion
                 flows();
             } else {
-                Log.i("------------------", "No se pudo establecer conexion");
+                Log.i("-------------0", "No se pudo establecer conexion");
             }
 
         }

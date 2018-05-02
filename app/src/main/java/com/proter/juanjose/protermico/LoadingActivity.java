@@ -51,12 +51,12 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
                     if (endOfLineIndex > 0) {                                           // make sure there data before ~
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);    // extract string
                         int dataLength = dataInPrint.length();       //get length of data received
-                        Log.i("handler mensaje-----", readMessage);
+                        Log.i("----------", "llega al handler loading " + readMessage);
 
                         if (recDataString.charAt(0) == '#')        //if it starts with # we know it is what we are looking for
                         {
 //                            msg("listo para ingresar");
-                            Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), KeyBoardActivity.class);
                             intent.putExtra("CONNECT", true);
                             startActivity(intent);
 
@@ -68,9 +68,12 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
                 }
             }
         };
+
         conBt = ConnectionBt.getInstance();
         conBt.addObserver(this);
-//        conBt.getBtSocket();
+        if (!conBt.getIsConnect()) {
+            conBt.getBtSocket();
+        }
 
 //        conBt.setAppContext(getApplicationContext());
 
@@ -86,12 +89,16 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
 
     protected void onResume() {
         ConnectionBt.getInstance().addObserver(this);
+       /* conBt = ConnectionBt.getInstance();
+        conBt.addObserver(this);*/
         super.onResume();
     }
 
     @Override
     protected void onPause() {
         ConnectionBt.getInstance().deleteObserver(this);
+      /*  conBt = ConnectionBt.getInstance();
+        conBt.deleteObserver(this);*/
         super.onPause();
     }
 
@@ -106,8 +113,9 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
         String readMessage = ((ConnectionBt) o).getData();
         int bytes = ((ConnectionBt) o).getByte();
         if (readMessage != null) {
-            bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
             Log.i("Notifico esto", readMessage);
+            bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+//            Log.i("Notifico esto", readMessage);
         }
 
         if (!((ConnectionBt) o).getIsBtConnected()) {
@@ -116,6 +124,5 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
             intent.putExtra("ALERT", "No se pudo conectar al dispositivo");
             startActivity(intent);
         }
-
     }
 }

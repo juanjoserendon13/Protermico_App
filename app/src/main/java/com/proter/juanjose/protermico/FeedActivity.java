@@ -43,16 +43,12 @@ public class FeedActivity extends AppCompatActivity implements Observer {
 
     private int ex, re;
 
-    private static final String RECOLL = "1";
-    private static final String EXPECT = "1";
-
-
     private Random rand = new Random();
     private Handler handler = new Handler();
 
     //Manejo de mensajes con interfaz grafica y bluetooth
     private ConnectionBt conBt;
-    static Handler bluetoothIn;
+    private Handler bluetoothIn;
     final int handlerState = 0;
     private StringBuilder recDataString = new StringBuilder();
 
@@ -158,11 +154,13 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         //Sale de la aplicación y regresa a la pantalla de inicio.
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                conBt.closeConnection();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("WARNING", true);
+                intent.putExtra("ALERT", "Se desconectó del dispositivo");
                 startActivity(intent);
             }
         });
-
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,7 +200,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
             public void run() {
                 int tem = rand.nextInt(40);
 
-                systemTemp(String.valueOf(tem));
+//                systemTemp(String.valueOf(tem));
                 handler.postDelayed(this, 3000);
             }
         };
@@ -215,7 +213,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
                 if (msg.what == handlerState) {          //if message is what we want
                     String readMessage = (String) msg.obj;                                                                // msg.arg1 = bytes from connect thread
                     recDataString.append(readMessage);
-                    Log.i("----------", "llega al handler " + recDataString);//keep appending to string until ~
+                    Log.i("----------", "llega al handler feed " + recDataString);//keep appending to string until ~
                     int endOfLineIndex = recDataString.indexOf("~");                    // determine the end-of-line
                     if (endOfLineIndex > 0) {                                           // make sure there data before ~
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);    // extract string
@@ -226,6 +224,12 @@ public class FeedActivity extends AppCompatActivity implements Observer {
 //                            msg("Patron singleton, hilos y bluetooth OK");
 
                         }
+                        if (recDataString.charAt(0) == '/') {
+                            String temp = recDataString.substring(1, endOfLineIndex);
+                            Log.i("----------", "llega al / " + temp);
+                            systemTemp(temp);
+                        }
+
                         //Condicionales que controlan el tiempo de descanso proveniente del dispositivo.
                         if (recDataString.charAt(0) == '*') {
                             msg("Patron singleton, hilos y bluetooth OK");
@@ -241,6 +245,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
                                 startTimer();
                             }
                         }
+
                         recDataString.delete(0, recDataString.length());      //clear all string data
                         // strIncom =" ";
                         dataInPrint = " ";
@@ -254,9 +259,11 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         conBt.addObserver(this);
         if (extras != null) {
             if (extras.getBoolean("CONNECT")) {
-                conBt.write("w");
+                conBt.write("start");
+//                conBt.write("start");
             }
         }
+
         updateCountDownText();
 
     }
@@ -438,7 +445,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         int bytes = ((ConnectionBt) o).getByte();
         if (readMessage != null) {
             bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
-            Log.i("Notifico esto", readMessage);
+            Log.i("--Notifico en el update", readMessage);
         }
     }
 }
