@@ -78,6 +78,7 @@ public class ConfigActivity extends AppCompatActivity implements Observer {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(intent);
             }
         });

@@ -61,6 +61,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i("--------------", "onCREATE");
         setContentView(R.layout.activity_feed);
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -213,7 +214,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
                 if (msg.what == handlerState) {          //if message is what we want
                     String readMessage = (String) msg.obj;                                                                // msg.arg1 = bytes from connect thread
                     recDataString.append(readMessage);
-                    Log.i("----------", "llega al handler feed " + recDataString);//keep appending to string until ~
+//                    Log.i("----------", "llega al handler feed " + recDataString);//keep appending to string until ~
                     int endOfLineIndex = recDataString.indexOf("~");                    // determine the end-of-line
                     if (endOfLineIndex > 0) {                                           // make sure there data before ~
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);    // extract string
@@ -226,7 +227,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
                         }
                         if (recDataString.charAt(0) == '/') {
                             String temp = recDataString.substring(1, endOfLineIndex);
-                            Log.i("----------", "llega al / " + temp);
+//                            Log.i("----------", "llega al / " + temp);
                             systemTemp(temp);
                         }
 
@@ -305,22 +306,32 @@ public class FeedActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onStart() {
         super.onStart();
-
+        Log.i("--------------", "onSTART");
     }
 
     protected void onResume() {
+        super.onResume();
+        Log.i("--------------", "onRESUME");
         ConnectionBt.getInstance().addObserver(this);
         homeBtn.setChecked(true);
         statisticBtn.setChecked(false);
         configBtn.setChecked(false);
 
-        super.onResume();
     }
 
     @Override
     protected void onPause() {
-        ConnectionBt.getInstance().deleteObserver(this);
         super.onPause();
+        Log.i("--------------", "onPAUSE");
+        ConnectionBt.getInstance().deleteObserver(this);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i("--------------", "onDESTROY");
+
     }
 
     private void updateCountDownText() {

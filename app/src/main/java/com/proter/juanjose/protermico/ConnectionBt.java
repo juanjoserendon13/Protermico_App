@@ -67,7 +67,7 @@ public class ConnectionBt extends Observable implements Runnable {
                     String readMessage = new String(buffer, 0, bytes);
                     data = readMessage;
                     if (data != bufferData) {
-                        Log.i("-------------", "dato entrante en singleton: " + data);
+//                        Log.i("-------------", "dato entrante en singleton: " + data);
                         setChanged();
                         notifyObservers();
                         clearChanged();
