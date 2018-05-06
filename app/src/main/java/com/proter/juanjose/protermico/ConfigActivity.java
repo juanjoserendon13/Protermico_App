@@ -20,6 +20,7 @@ public class ConfigActivity extends AppCompatActivity implements Observer {
     private EditText unitsInEt, hoursInEt;
     private Button logoutBtn, saveBtn;
     private ConnectionBt conBt;
+    private String unitsTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +54,13 @@ public class ConfigActivity extends AppCompatActivity implements Observer {
                 if (inUnit.matches("") && inHour.matches("")) {
                     msg("No hay ningún cambio.");
                 } else {
+                    if (!inUnit.matches("")) {
+                        unitsTotal = inUnit;
+                        conBt.write("units+" + inUnit);
+//                        Log.i("-------------Envio ", inUnit);
+                    }
                     msg("Se guardaron los cambios.");
                 }
-
             }
         });
 
@@ -78,7 +83,12 @@ public class ConfigActivity extends AppCompatActivity implements Observer {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
+                if (unitsTotal != null) {
+                    intent.putExtra("DATO", unitsTotal);
+                    Log.i("-----------", "pasa las unidades al feed " + unitsTotal);
+                }
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
                 startActivity(intent);
             }
         });

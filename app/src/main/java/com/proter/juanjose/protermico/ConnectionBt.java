@@ -74,6 +74,8 @@ public class ConnectionBt extends Observable implements Runnable {
                         bufferData = readMessage;
                     }
                 } catch (Exception e) {
+                    isBtConnected = false;
+                    btSocket = null;
                     Log.i("-----------", "el error?????? " + e);
 //                    break;
                 }

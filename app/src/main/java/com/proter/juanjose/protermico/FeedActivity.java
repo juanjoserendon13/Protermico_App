@@ -57,6 +57,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
     private CountDownTimer countDown;
     private boolean timerRunning;
     private long timeLeftInMillis;
+    Bundle extras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         Log.i("--------------", "onCREATE");
         setContentView(R.layout.activity_feed);
         Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
+        extras = intent.getExtras();
         cont = getApplicationContext();
 
         celsius = "°C";
@@ -260,11 +261,10 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         conBt.addObserver(this);
         if (extras != null) {
             if (extras.getBoolean("CONNECT")) {
-                conBt.write("start");
+                conBt.write("start+" + extras.getString("DATO"));
 //                conBt.write("start");
             }
         }
-
         updateCountDownText();
 
     }
@@ -307,11 +307,41 @@ public class FeedActivity extends AppCompatActivity implements Observer {
     protected void onStart() {
         super.onStart();
         Log.i("--------------", "onSTART");
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        intent = getIntent();
+        extras = intent.getExtras();
+        Log.i("---------", "llega al new intent");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        conBt.getBtSocket();
+        if (extras != null) {
+            Intent intent = getIntent();
+            Bundle extraTwo = intent.getExtras();
+
+            String unitsChanged = extras.getString("DATO");
+            Log.i("-----------", "setea las unidades " + extras.getString("DATO"));
+            if (unitsChanged != null) {
+                unitsTotalTv.setText("Total: " + unitsChanged);
+                Log.i("-----------", "setea las unidades");
+            }
+
+
+        }
     }
 
     protected void onResume() {
         super.onResume();
         Log.i("--------------", "onRESUME");
+
         ConnectionBt.getInstance().addObserver(this);
         homeBtn.setChecked(true);
         statisticBtn.setChecked(false);
@@ -331,6 +361,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
     protected void onDestroy() {
         super.onDestroy();
         Log.i("--------------", "onDESTROY");
+        conBt.closeConnection();
 
     }
 
@@ -409,10 +440,16 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tempChangeTv.setText(temperature + celsius);
-                colorMap = map(Float.parseFloat(temperature), 0, 40, 200, 0);
-                //Hue, saturation, brightness
-                tempChangeTv.setTextColor(Color.HSVToColor(new float[]{colorMap, 0.8f, 0.9f}));
+                try {
+                    tempChangeTv.setText(temperature + celsius);
+                    colorMap = map(Float.parseFloat(temperature), 0, 40, 200, 0);
+                    //Hue, saturation, brightness
+                    tempChangeTv.setTextColor(Color.HSVToColor(new float[]{colorMap, 0.8f, 0.9f}));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.i("----------", "formato de temperatura incorrecto");
+                }
+
             }
         });
     }
