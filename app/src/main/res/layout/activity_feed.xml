@@ -42,7 +42,7 @@
         android:layout_alignStart="@+id/temp_title"
         android:layout_below="@+id/temp_title"
         android:layout_gravity="bottom|center"
-        android:text="29"
+        android:text="0"
         android:textAlignment="center"
         android:textColor="@color/colorYellowPalette"
         android:textSize="35sp" />

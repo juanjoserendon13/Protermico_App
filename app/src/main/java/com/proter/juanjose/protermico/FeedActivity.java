@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -67,6 +68,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         Intent intent = getIntent();
         extras = intent.getExtras();
         cont = getApplicationContext();
+
 
         celsius = "°C";
         temp = "32";
@@ -129,19 +131,6 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         realTimeTv.setText("10:00" + "am");
         realTimeDosTv.setText("10:00" + "am");
 
-        //Intento de persistencia de DATOS NO FUNKA con boton de interfaz
-        if (savedInstanceState != null) {
-            String recollect = savedInstanceState.getString("saved_re");
-            recollectedRealTv.setText(recollect);
-
-            String expect = savedInstanceState.getString("saved_ex");
-            expectedRealTv.setText(expect);
-
-            Log.i("In savedInstance------", recollect);
-            Log.i("In savedInstance------", expect);
-        } else {
-            Log.i("not in oncreate saved", "ggg");
-        }
         // remainderWaterTv.setText("Recuerde hidratarse cada 20 minutos.");
 
         //Metodos y cambios de variables.
@@ -197,17 +186,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         };
         handler.postDelayed(r, 2000);
 
-        //Loop every 3 seconds simulating temperature
-        Runnable ru = new Runnable() {
-            public void run() {
-                int tem = rand.nextInt(40);
 
-//                systemTemp(String.valueOf(tem));
-                handler.postDelayed(this, 3000);
-            }
-        };
-
-        handler.postDelayed(ru, 3000);
         //Hanlder que conecta los datos entrantes y los despliega en interfaz
 
         bluetoothIn = new Handler() {
@@ -223,6 +202,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
 
                         if (recDataString.charAt(0) == '#')        //if it starts with # we know it is what we are looking for
                         {
+                            conBt.write("start");
 //                            msg("Patron singleton, hilos y bluetooth OK");
 
                         }
@@ -262,54 +242,14 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         if (extras != null) {
             if (extras.getBoolean("CONNECT")) {
                 conBt.write("start+" + extras.getString("DATO"));
-//                conBt.write("start");
+//                conBt.write("w");
             }
         }
         updateCountDownText();
 
     }
 
-    //persistencia de datos NO FUNKA con boton de interfaz
-    @Override
-    public void onSaveInstanceState(Bundle outSate) {
-        super.onSaveInstanceState(outSate);
-        String toSaveRe = recollectedRealTv.getText().toString();
-        String toSaveEx = expectedRealTv.getText().toString();
-        outSate.putString("saved_re", toSaveRe);
-        outSate.putString("saved_ex", toSaveEx);
-        //outSate.putString(RECOLL, recollectedRealTv.getText().toString());
-        //outSate.putString(EXPECT, expectedRealTv.getText().toString());
-
-        Log.i("In onSaveRe", toSaveRe);
-        Log.i("In onSaveEx", toSaveEx);
-
-    }
-
-    //persistencia de datos NO FUNKA con boton de interfaz
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        Log.d("In onRestore----------", "bien");
-        String savedRe = savedInstanceState.getString("saved_re");
-        String savedEx = savedInstanceState.getString("saved_ex");
-
-        recollectedRealTv.setText(savedRe);
-        expectedRealTv.setText(savedEx);
-        //TextView recollected = findViewById(R.id.recollected_real_tv);
-        //TextView expected = findViewById(R.id.expected_real_tv);
-
-        //recollected.setText(savedInstanceState.getString(RECOLL));
-        //expected.setText(savedInstanceState.getString(EXPECT));
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.i("--------------", "onSTART");
-
-    }
-
+    // Sobre escribo el metodo para cambiar el intent entrante.
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -357,13 +297,6 @@ public class FeedActivity extends AppCompatActivity implements Observer {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i("--------------", "onDESTROY");
-        conBt.closeConnection();
-
-    }
 
     private void updateCountDownText() {
         int minutes = (int) (timeLeftInMillis / 1000) / 60;

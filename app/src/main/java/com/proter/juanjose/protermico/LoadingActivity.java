@@ -79,14 +79,6 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
 
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
-
-
     protected void onResume() {
         ConnectionBt.getInstance().addObserver(this);
        /* conBt = ConnectionBt.getInstance();
