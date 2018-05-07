@@ -249,6 +249,18 @@ public class FeedActivity extends AppCompatActivity implements Observer {
 
     }
 
+    // deshabilito el boton de volver.
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        conBt.closeConnection();
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("WARNING", true);
+        intent.putExtra("ALERT", "Se desconectó del dispositivo");
+        startActivity(intent);
+    }
+
     // Sobre escribo el metodo para cambiar el intent entrante.
     @Override
     protected void onNewIntent(Intent intent) {

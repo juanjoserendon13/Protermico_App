@@ -69,6 +69,12 @@ public class KeyBoardActivity extends AppCompatActivity implements Observer {
         conBt.addObserver(this);
     }
 
+    // deshabilito el boton de volver.
+    @Override
+    public void onBackPressed() {
+
+    }
+
     protected void onResume() {
         super.onResume();
         ConnectionBt.getInstance().addObserver(this);

@@ -79,6 +79,12 @@ public class LoadingActivity extends AppCompatActivity implements Observer {
 
     }
 
+    // deshabilito el boton de volver.
+    @Override
+    public void onBackPressed() {
+
+    }
+
     protected void onResume() {
         ConnectionBt.getInstance().addObserver(this);
        /* conBt = ConnectionBt.getInstance();
