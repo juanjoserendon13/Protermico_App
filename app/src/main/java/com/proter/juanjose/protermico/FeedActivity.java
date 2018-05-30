@@ -57,6 +57,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
     private long START_TIME_IN_MILLIS = 0;
     private CountDownTimer countDown;
     private boolean timerRunning;
+    private boolean onRest;
     private long timeLeftInMillis;
     Bundle extras;
 
@@ -69,7 +70,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
         extras = intent.getExtras();
         cont = getApplicationContext();
 
-
+        onRest = true;
         celsius = "°C";
         temp = "32";
         logoutBtn = findViewById(R.id.logout_btn);
@@ -214,17 +215,21 @@ public class FeedActivity extends AppCompatActivity implements Observer {
 
                         //Condicionales que controlan el tiempo de descanso proveniente del dispositivo.
                         if (recDataString.charAt(0) == '*') {
-                            msg("Patron singleton, hilos y bluetooth OK");
+//                            msg("Patron singleton, hilos y bluetooth OK");
                             String type = recDataString.substring(1, 5);
                             String millis = recDataString.substring(6, endOfLineIndex);
 
                             if (type.equals("rest")) {
-                                Log.i("----------", "Millis para descansar " + millis);
-                                startActivity(new Intent(FeedActivity.this, PopUp.class));
-                                systemState(0);
-                                START_TIME_IN_MILLIS = Long.parseLong(millis, 10);
-                                timeLeftInMillis = START_TIME_IN_MILLIS;
-                                startTimer();
+                                if (onRest) {
+                                    Log.i("----------", "Millis para descansar " + millis);
+                                    startActivity(new Intent(FeedActivity.this, PopUp.class));
+                                    systemState(0);
+                                    START_TIME_IN_MILLIS = Long.parseLong(millis, 10);
+                                    timeLeftInMillis = START_TIME_IN_MILLIS;
+                                    startTimer();
+                                    onRest = false;
+                                }
+
                             }
                         }
 
@@ -249,7 +254,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
 
     }
 
-    // deshabilito el boton de volver.
+    // Manejo el boton de volver.
 
     @Override
     public void onBackPressed() {
@@ -333,6 +338,7 @@ public class FeedActivity extends AppCompatActivity implements Observer {
                 systemState(1);
                 resetTimer();
                 timerRunning = false;
+                onRest = true;
             }
         }.start();
 
